@@ -43,6 +43,32 @@ const userCtrl = {
       return res.status(500).json({ msg: error.message });
     }
   },
+  // Check login
+  login: async (req, res) => {
+    try {
+      const { email, password } = req.body;
+
+      const user = await Users.findOne({ email });
+      if (!user) return res.status(400).json({ msg: "User does not exits." });
+      // Check password nhập vào với password data
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) return res.status(400).json({ msg: "Incorrect password." });
+      //If login success, create access token and refresh token
+      const accesstoken = createAccesstoken({ id: user._id });
+      const refreshtoken = createRefreshToken({ id: user._id });
+
+      res.cookie("refreshtoken", refreshtoken, {
+        httpOnly: true,
+        path: "/user/refresh_token",
+      });
+
+      res.json({ accesstoken });
+      // res.json({ msg: "Login Success!!!" });
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+    }
+  },
+
   refreshToken: (req, res) => {
     try {
       const rf_token = req.cookies.refreshtoken;

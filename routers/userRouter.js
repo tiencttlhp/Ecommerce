@@ -5,7 +5,11 @@ const userCtrl = require("../controllers/userCtrl");
 //   res.json({ msg: "Test register, Test Router" });
 // });
 
+// Registers
 router.post("/register", userCtrl.register);
+// Login
+router.post("/login", userCtrl.login);
+// Refresh Token
 router.get("/refresh_token", userCtrl.refreshToken);
 
 module.exports = router;
